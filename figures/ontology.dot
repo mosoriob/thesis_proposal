@@ -1,0 +1,14 @@
+digraph g {
+	"Version" -> "ImageVersion" [label="has subclass"]
+	"SoftwareComponent" -> "OperatingSystem" [label="isPackageOf (Domain>Range)"]
+	"SoftwareComponent" -> "SoftwarePackage" [label="has subclass"]
+	"OperatingSystem" -> "SoftwarePackage" [label="hasPackages (Domain>Range)"]
+	"PackageVersion" -> "SoftwareComponent" [label="isVersionOf (Domain>Range)"]
+	"Image" -> "SoftwareImage" [label="has subclass"]
+	"PackageVersion" -> "ImageLayer" [label="modifyLayer (Domain>Range)"]
+	"ImageLayer" -> "OperatingSystem" [label="usesOS (Domain>Range)"]
+	"SoftwareImage" -> "ImageLayer" [label="hasLayers (Domain>Range)"]
+	"DeploymentScript" -> "DockerFile" [label="has subclass"]
+	"Version" -> "PackageVersion" [label="has subclass"]
+	"DockerFile" -> "SoftwareImage" [label="hasImage (Domain>Range)"]
+}

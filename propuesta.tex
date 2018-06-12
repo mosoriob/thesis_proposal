@@ -1,0 +1,159 @@
+\documentclass{llncs}
+%
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\usepackage{url}
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{rotating}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{subcaption}
+
+\usepackage{listings}
+\begin{document}
+%
+%\allowdisplaybreaks
+
+\title{Propuesta de Tesis}
+\author{Maximiliano Osorio}
+\institute{
+	$^1$ Informatics Department, Universidad T\'ecnica Federico Santa Mar\'ia, Chile\\
+	\email{mosorio@inf.utfsm.cl}}
+
+
+\def\baselinestretch{0.97}
+\maketitle
+
+   
+\lstset{
+  language=bash,
+  frame=top,frame=bottom,
+  basicstyle=\small\normalfont\sffamily,    % the size of the fonts that are used for the code
+  stepnumber=1,                           % the step between two line-numbers. If it is 1 each line will be numbered
+  numbersep=10pt,                         % how far the line-numbers are from the code
+  tabsize=2,                              % tab size in blank spaces
+  extendedchars=true,                     %
+  breaklines=true,                        % sets automatic line breaking
+  captionpos=t,                           % sets the caption-position to top
+  mathescape=true,
+  stringstyle=\color{white}\ttfamily, % Farbe der String
+  showspaces=false,
+      numbers=left,           % Leerzeichen anzeigen ?
+  showtabs=false,             % Tabs anzeigen ?
+  xleftmargin=17pt,
+  framexleftmargin=17pt,
+  framexrightmargin=17pt,
+  framexbottommargin=5pt,
+  framextopmargin=5pt,
+  showstringspaces=false      % Leerzeichen in Strings anzeigen ?
+}
+
+\section{Estado del arte y marco teórico}
+\label{sec-intro}
+
+La reproducibilidad de los resultados en experimentos es una piedra angular del método científico. Es por ello, que la comunidad científica ha incentivado a los investigadores a publicar sus contribuciones en un forma verificable y entendible \cite{james2014standing,stodden2010reproducible}.
+%cite: 1,2
+
+Particularmente, en el área de ciencias de computación, la reproducibilidad requiere que los investigadores compartan el código y los datos de manera pública con el fin que los resultados y el método pueden ser analizando en una forma similar al trabajo original descrito en la publicación asociada.
+Para lograr ese objetivo, el código debe estar disponible y los datos deben encontrarse en un formato leíble \cite{stodden2014implementing}.
+
+Además para lograr el objetivo anterior, los experimentos son descritos por workflows científicos, estos son una representación útil para administrar la ejecución de grandes ambientes computacionales.
+Por ejemplo, investigadores en bio-informática ha incorporado los workflows para distintos análisis: 
+Doblamiento de proteínas \cite{craddock2006science}, secuencias de DNA y RNA \cite{blankenberg2010galaxy,giardine2005galaxy} y la detección de ondas gravitacionales \cite{deelman2004pegasus}.
+
+Dado que los workflows formalmente describen la secuencia de tareas computacionales y administración de datos, es fácil encontrar el camino de los datos producidos.
+Un científico podría ver el workflow y los datos, seguir los pasos y llegar al mismo resultado. En otras palabras, la representación del workflow facilita la creación y administración de la computación y además construye una base en la cual los resultados pueden ser validados y compartidos.
+
+De acuerdo a \cite{king1995replication}, para alcanzar la conservación necesaria del experimento se debe garantizar que: existe la suficiente información con la cual se pueda entender, evaluar y construir un trabajo anterior sin información adicional del autor.
+Como se menciono  , la mayoría de las propuestas de conservación de ambientes en las ciencias de computación se han enfocado en los datos, el código y la descripción de workflow pero ha dejando de lado los recursos computacionales y componentes de software. Siendo un recurso esencial para reproducir el experimento
+
+Uno de los trabajos que se ha enfocado en conservar los recursos de un ambiente computacional es \cite{santana2017reproducibility}. Donde los autores han identificado dos enfoques para conservar un ambiente científico. Conversación física: donde el objeto real es conservado dada la relevancia y la dificultada de obtener una replica y  Conversación lógica: donde los objetos son descriptos en una manera que un experimento similar puede ser obtenido en un futuro experimento.
+
+Los autores definen un proceso para documentar el workflow, los componentes de software y sus dependencias. Luego, aplican este enfoque para reproducir los ambientes computacionales de tres workflows utilizando máquinas virtuales. Para lograr esta tarea, utilizan modelos semánticos para describir la infraestructura, conservar sus recursos y sus relaciones. A partir de esta descripción, logran reconstruir el ambiente computacional para ejecutar el workflow asociado y obtener los resultados. 
+Sin embargo, el proceso anotación es realizado manera semi-automática, dejando demasiado trabajo a los científicos.
+
+%todo: rewrite
+Respecto a la conservación física, los autores argumentan que no es posible de realizar dado que los esfuerzos para mantener tal infraestructura son altos dado al tamaño de las imágenes de las máquinas virtuales y no hay garantía que no sufran un proceso de decaimiento \cite{gavish2011universal}. Aún más, la infraestructura puede estar sujeta a políticas de la organización que restringe el acceso a un cierto número de científicos, limitando la reproducibilidad a ese grupo selecto.
+
+En esta propuesta, nosotros buscamos enfrentar la problemática de preservar el ambiente computación tanto de forma lógica y física. Para ello, utilizamos virtualización basada en containers, esta funcionalidad a nivel de sistema operativo permite la existencia de multiples espacios de usuarios llamados Containers. Una  de las tecnologías de visualización más populares basado en containers es Docker~\footnote{\url{https://www.docker.com/}}, que implementa una virtualización creando versiones mínimas de sistema de operativo 
+Docker Containers puede ser visto como una máquina virtual liviana que permite construir y preservar un ambiente computacional, incluyendo todas las dependencias necesarios, e.g., bibliotecas, configuraciones, código y datos necesarias. 
+ 
+Docker no sólo es utilizando en la industria, también está siendo utilizado por proyectos científicos como Pegasus de la University of Southern California, TensorFlow, JupyterHub, entre otros. Y ha sido propuesto para enfrentar el problema de reproducibilidad en diversos trabajos como \cite{Boettiger:2015:IDR:2723872.2723882,aranguren2015enhanced,di2015impact,cito2016using,hung2016guidock,diaz17adass} sin realizar una propuesta completa sobre la conservación.
+
+Docker distribuye el ambiente computaciones por medio de imágenes de software. Estas imágenes pueden ser públicas o privadas y puede ser almacenadas en un repositorios online llamados DockerHub \footnote{\url{https://hub.docker.com/}}. 
+ Actualmente, Docker Hub almacena más de 4.5 millones de imágenes y a Abril de 2018, hay más de 18,000 millones de descargas y un uso almacenamiento total de 27 PB. Considerando lo anterior, es plausible afirmar que Docker y DockerHub es una herramienta válida para preservar ambientes computaciones de manera física. 
+Cualquiera tiene la oportunidad de crear y almacenar en el Docker Hub, es necesario, primero crear una archivo descripto llamado Dockerfile.
+El archivo Dockerfile describe los componentes de software, características de red, volúmenes de datos, variables de entornos, en otros, construyendo la imagen y subiendo esta imagen a Docker Hub. Es importante notar que el archivo Dockerfile contiene los paquetes que se desean instalar pero estos paquetes representan un sub conjunto de paquetes que se instalarán dado que un paquete normalmente instala múltiples dependencias.
+Por ejemplo, el archivo Dockerfile de la imagen 1.5.0-rc1-devel-py3 de TensorFlow, reconocido framework para Machine Learning, muestra la instalación de los siguientes 12 paquetes sin identificar las versiones.
+
+\begin{lstlisting}
+RUN  apt-get install -y --no-install-recommends \
+        build-essential \
+        curl \
+        libfreetype6-dev \
+        libhdf5-serial-dev \
+        libpng12-dev \
+        libzmq3-dev \
+        pkg-config \
+        python \
+        python-dev \
+        rsync \
+        software-properties-common \
+        unzip
+\end{lstlisting}
+
+Sin embargo, esta sentencia ha instalado 184 paquetes (información obtenida gracias a nuestra propuesta). Realizar un trabajo de anotación de imagen de forma semi-automatica o manual conlleva un esfuerzo bastante importante.
+Por lo cual, podemos afirmar el archivo Dockerfile no es una alternativa válida para la conservación lógica.
+De la misma forma, Docker Hub no controla ni describe que paquetes se encuentran la imagen, lo cual no permite al usuario conocer los componentes de software y las versiones que presenta instalada en la imagen de Docker. En otras palabras, las imágenes de Docker trabajan con caja negra, esto que se refiere a que los usuarios conocen cuales son los paquetes que desearon instalar y que fueron descritos en el DockerFile, pero no conocen las dependencias necesarias ni las versiones especificas que fueron instaladas.
+Es importante remarcar, que la importancia de conocer los componentes de software y sus versiones presenten en el ambiente de ejecución radica en la relación fuerte que existe con las tareas del workflow, siendo un requerimiento para reproducir el experimento satisfactoriamente.
+Asimismo, la conservación lógica de una imagen permite la reproducción del ambiente computacional en caso que la imagen física se encuentre dañada o eliminada. Proponemos el uso de Containers debido a que son livianos y más importante, porque la descripción de estos permiten documentar workflows científicos. 
+
+Nuestra propuesta utiliza descripciones semánticas de modelos estándares \cite{santana2017reproducibility} para conservar el ambiente del experimento y generar la infraestructura requerida utilizando Containers. Los alcances de esta propuesta no están limitados al uso de la herramienta tecnología Docker sino a cualquier herramienta que cumpla con el estándar OpenContainers \footnote{https://www.opencontainers.org/} propuesto por la Linux Foundation \footnote{https://www.linuxfoundation.org/}	.
+Realizaremos una evaluación práctica de un workflow científico real en cual describiremos la aplicación usando estos modelos semánticos para reproducir el ambiente en una plataforma cloud privada y pública.
+
+\newpage
+%
+%\section{Hipotesis}
+%
+%
+%\begin{itemize}
+%	\item An automated process can describe the requirements of the computational environment and encode them in a structured and shareable format.
+%	\item Container-based virtualization techniques allow the reproduction of scientific environments in compliance with the requirements of the experiment.
+%\end{itemize}
+%\section{Objetivos}
+%
+%\subsection{Objetivos generales}
+%
+%\begin{itemize}
+%	\item Conduct logical and physical conservation of the computational environment of the experiment using containers.
+%	\item Implement an automated process able to read the mentioned information and specify a new environment of it, supporting the formerly required features.
+%	\item Integrate a system that allows the deployment of these computational environments in various infrastructure providers and install the appropriate software based on the deployment plan.
+%
+%\end{itemize}
+%\subsection{Objetivos especificos}
+%
+%\begin{itemize}
+%	\item 	Adapt and improve standard models that describe Computational Scientific Experiment to include Container-based virtualization.
+%	\item Designate a framework to annotate the components of the environment’s experiments using the previous models.
+%\end{itemize}
+%
+%\section{Resultados}
+%
+%\subsection{Aportes y Resultados Esperados}
+%\begin{itemize}
+%	\item A method for describing the capabilities of the computational resources that are contained in the Computation Environment of a scientific environment.
+%
+%\end{itemize}
+%\subsection{Formas de validación}
+%
+%\begin{itemize}
+%	\item Realizaremos una evaluación práctica de un workflow científico real en cual describiremos la aplicación usando estos modelos semánticos para reproducir el ambiente en una plataforma cloud privada y pública.
+%\end{itemize}
+\bibliographystyle{ieeetr}
+\bibliography{references}
+
+\end{document}
